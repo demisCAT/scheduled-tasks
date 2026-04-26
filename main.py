@@ -31,7 +31,7 @@ if today in birthdays_dict:
     # print(today)
     birthday = birthdays_dict[today]
 
-    with (open(f"./Letter_templates/letter_{rd.randint(1,3)}.txt", mode="r") as letter):
+    with (open(f"./letter_templates/letter_{rd.randint(1,3)}.txt", mode="r") as letter):
         letter_txt = str(letter.read())
         birth_name = birthday["name"]
         replace_text = letter_txt.replace("[NAME]", birth_name)
