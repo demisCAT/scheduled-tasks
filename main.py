@@ -6,33 +6,42 @@
 # See the solution video in the 100 Days of Python Course for explainations.
 
 
-from datetime import datetime
 import pandas
-import random
+import datetime as dt
+import random as rd
 import smtplib
 import os
 
 # import os and use it to get the Github repository secrets
-MY_EMAIL = os.environ.get("MY_EMAIL")
-MY_PASSWORD = os.environ.get("MY_PASSWORD")
+MY_EMAIL="smtpgateway81@gmail.com"
+MY_PASSWORD="hfjv teuw rkio treu"
 
-today = datetime.now()
-today_tuple = (today.month, today.day)
 
-data = pandas.read_csv("birthdays.csv")
-birthdays_dict = {(data_row["month"], data_row["day"])                  : data_row for (index, data_row) in data.iterrows()}
-if today_tuple in birthdays_dict:
-    birthday_person = birthdays_dict[today_tuple]
-    file_path = f"letter_templates/letter_{random.randint(1, 3)}.txt"
-    with open(file_path) as letter_file:
-        contents = letter_file.read()
-        contents = contents.replace("[NAME]", birthday_person["name"])
+now = dt.datetime.now()
+today = (now.month, now.day)
 
-    with smtplib.SMTP("YOUR EMAIL PROVIDER SMTP SERVER ADDRESS") as connection:
+birth_data = pandas.read_csv("birthdays.csv")
+
+birthdays_dict = {  (row_data["month"], row_data["day"]):row_data
+                    for (index,row_data)
+                    in birth_data.iterrows()
+                 }
+
+if today in birthdays_dict:
+    # print(today)
+    birthday = birthdays_dict[today]
+
+    with (open(f"./Letter_templates/letter_{rd.randint(1,3)}.txt", mode="r") as letter):
+        letter_txt = str(letter.read())
+        birth_name = birthday["name"]
+        replace_text = letter_txt.replace("[NAME]", birth_name)
+
+    with smtplib.SMTP("smtp.gmail.com") as connection:
         connection.starttls()
         connection.login(MY_EMAIL, MY_PASSWORD)
         connection.sendmail(
-            from_addr=MY_EMAIL,
-            to_addrs=birthday_person["email"],
-            msg=f"Subject:Happy Birthday!\n\n{contents}"
-        )
+                            from_addr=MY_EMAIL,
+                            to_addrs="jbarrosoq@protonmail.com",
+                            msg=f"Subject:Happy Birthday!!\n\n{replace_text}",
+                            )
+        connection.close()
